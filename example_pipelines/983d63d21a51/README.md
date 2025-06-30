@@ -15,17 +15,28 @@ The original script (`example-0.py`) has been refactored with the following impr
    - Added handling for missing values in all columns (Age, Fare)
    - Extracted deck information from Cabin before dropping it
    - Added checks for missing values in categorical columns
+   - Added data validation to ensure columns exist before processing
+   - Created a copy of the original data to avoid modifying it
 
 3. **Model Training and Evaluation**:
    - Added option for hyperparameter tuning with GridSearchCV
    - Added ROC AUC score as an additional evaluation metric
    - Added feature importance analysis
+   - Added proper error handling for edge cases (e.g., single class in test set)
+   - Used stratified sampling to maintain class distribution in train/test split
 
 4. **Path Handling**:
    - Simplified path handling for better maintainability
 
 5. **Error Handling**:
    - Added robust error handling for file operations and data processing
+   - Added informative error messages and warnings
+   - Added global try-except in main function to catch and report any errors
+
+6. **Usability Improvements**:
+   - Added progress messages to track pipeline execution
+   - Added summary statistics for preprocessing and model performance
+   - Improved formatting of output for better readability
 
 ## Usage
 
@@ -35,4 +46,8 @@ Run the script with:
 python example-0.py
 ```
 
-To enable hyperparameter tuning, set `perform_grid_search=True` in the `main()` function.
+To enable hyperparameter tuning, set `perform_grid_search=True` in the `main()` function. Note that grid search may take longer to run but can result in better model performance.
+
+## Performance
+
+The improved pipeline maintains the same core functionality while adding robustness, better error handling, and more informative output. The code is now more maintainable and can handle a wider range of edge cases.
