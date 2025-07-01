@@ -18,6 +18,7 @@ The original script (`example-0.py`) has been refactored with the following impr
    - Added data validation to ensure columns exist before processing
    - Created a copy of the original data to avoid modifying it
    - **Fixed data leakage**: Split preprocessing into two phases to ensure imputation statistics are calculated only from training data
+   - **Fixed feature mismatch**: Ensure test set conforms exactly to training set's feature structure after one-hot encoding
 
 3. **Model Training and Evaluation**:
    - Added option for hyperparameter tuning with GridSearchCV
@@ -58,6 +59,19 @@ To enable hyperparameter tuning, set `perform_grid_search=True` in the `main()` 
 2. `preprocess_features()`: Calculate imputation statistics only from training data and apply to both train/test sets
 
 This ensures the test set remains truly unseen during preprocessing and training.
+
+## Feature Mismatch Fix
+
+**Critical Issue Identified and Fixed**: The original approach of applying `pd.get_dummies()` separately to training and test sets could cause feature dimension mismatches, leading to ValueError during prediction when categorical variables have different unique values in each set.
+
+**Solution**: 
+1. Apply one-hot encoding to training set first to establish the reference feature set
+2. For test set, ensure it conforms exactly to training set's feature structure:
+   - Add missing columns (exist in training but not test) with zeros
+   - Remove extra columns (exist in test but not training)
+   - Maintain exact column order as training set
+
+This ensures the model receives exactly the same number of features during training and prediction.
 
 ## Performance
 

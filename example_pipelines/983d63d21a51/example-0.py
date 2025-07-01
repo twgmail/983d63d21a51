@@ -77,23 +77,24 @@ def preprocess_features(X_train, X_test):
         X_test_copy["Embarked"] = X_test_copy["Embarked"].fillna(embarked_mode)
 
     # One-hot encode categorical variables
+    # Apply to training set first to establish the feature set
     X_train_encoded = pd.get_dummies(X_train_copy, columns=["Sex", "Embarked", "Deck"])
+
+    # For test set, we need to ensure it has exactly the same columns as training set
     X_test_encoded = pd.get_dummies(X_test_copy, columns=["Sex", "Embarked", "Deck"])
 
-    # Ensure both train and test have the same columns after encoding
-    # Get all columns from both sets
-    all_columns = set(X_train_encoded.columns) | set(X_test_encoded.columns)
+    # Get the training set columns (this is our reference feature set)
+    train_columns = X_train_encoded.columns.tolist()
 
-    # Add missing columns with zeros
-    for col in all_columns:
-        if col not in X_train_encoded.columns:
-            X_train_encoded[col] = 0
+    # Ensure test set conforms exactly to training set feature structure
+    # Add missing columns (that exist in training but not in test) with zeros
+    for col in train_columns:
         if col not in X_test_encoded.columns:
             X_test_encoded[col] = 0
 
-    # Reorder columns to match
-    X_train_encoded = X_train_encoded.reindex(sorted(all_columns), axis=1)
-    X_test_encoded = X_test_encoded.reindex(sorted(all_columns), axis=1)
+    # Remove extra columns (that exist in test but not in training)
+    # and reorder to match training set exactly
+    X_test_encoded = X_test_encoded[train_columns]
 
     # Handle missing values in numerical columns using training set statistics
     if "Age" in X_train_encoded.columns and X_train_encoded["Age"].isnull().any():
